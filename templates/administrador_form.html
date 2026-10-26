@@ -1,0 +1,95 @@
+<!-- Sistema criado por Diego Mendes Rodrigues, utilizando desenvolvimento de software e inteligência artificial -->
+{% extends "base.html" %}
+{% block title %}{% if item %}Editar{% else %}Novo{% endif %} Administrador - Inventarium{% endblock %}
+{% block content %}
+<h1 class="text-3xl font-bold text-[#182387] mb-6"><i class="fas fa-user-shield mr-2 text-[#182387]"></i>{% if item %}Editar{% else %}Novo{% endif %} Administrador</h1>
+
+<div class="bg-white rounded-xl shadow-sm p-6">
+    <form method="POST" action="{{ request.path }}">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">CPF *</label>
+                <input type="text" name="cpf" maxlength="15" value="{{ item.cpf if item else '' }}" placeholder="000.000.000-00" required
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Nome Completo *</label>
+                <input type="text" name="nome_completo" maxlength="150" value="{{ item.nome_completo if item else '' }}" required
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Telefone *</label>
+                <input type="text" name="telefone" maxlength="20" value="{{ item.telefone if item else '' }}" placeholder="(00) 00000-00000" required
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">E-mail *</label>
+                <input type="email" name="email" maxlength="150" value="{{ item.email if item else '' }}" required
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Usuário *</label>
+                <input type="text" name="usuario" maxlength="50" minlength="8" value="{{ item.usuario if item else '' }}" required
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Tipo de Administrador *</label>
+                <select name="tipo" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['Administrador', 'Visualizador'] %}
+                    <option value="{{ opt }}" {% if item and item.tipo == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Recebe as Notoficações do Sistema *</label>
+                <select name="recebe_notificacoes" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['Sim', 'Não'] %}
+                    <option value="{{ opt }}" {% if item and item.recebe_notificacoes == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Outras Informações</label>
+                <textarea name="outras_informacoes" rows="3"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{% if item %}{{ item.outras_informacoes }}{% endif %}</textarea>
+            </div>
+        </div>
+        <div class="mt-6 flex gap-4">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-save mr-2"></i>Salvar
+            </button>
+            <a href="{{ url_for('list_administradores') }}" class="bg-red-800 hover:bg-red-900 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-times mr-2"></i>Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, '');
+    if (cpf.length !== 11) return false;
+    if (/^(\d)\1{10}$/.test(cpf)) return false;
+    let soma = 0;
+    for (let i = 0; i < 9; i++) soma += parseInt(cpf[i]) * (10 - i);
+    const resto1 = soma % 11;
+    const dv1 = resto1 < 2 ? 0 : 11 - resto1;
+    if (dv1 !== parseInt(cpf[9])) return false;
+    soma = 0;
+    for (let i = 0; i < 10; i++) soma += parseInt(cpf[i]) * (11 - i);
+    const resto2 = soma % 11;
+    const dv2 = resto2 < 2 ? 0 : 11 - resto2;
+    return dv2 === parseInt(cpf[10]);
+}
+const campoCpf = document.querySelector('input[name="cpf"]');
+campoCpf.addEventListener('blur', function () {
+    if (!this.value.trim()) return;
+    if (!validarCPF(this.value)) {
+        alert('CPF inválido: os dígitos verificadores não conferem.');
+        this.focus();
+    }
+});
+</script>
+{% endblock %}

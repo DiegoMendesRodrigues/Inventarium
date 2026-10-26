@@ -1,0 +1,95 @@
+<!-- Sistema criado por Diego Mendes Rodrigues, utilizando desenvolvimento de software e inteligência artificial -->
+{% extends "base.html" %}
+{% block title %}Softwares - Inventarium{% endblock %}
+{% block content %}
+{% macro th_ord(coluna, rotulo, ordem_atual, direcao_atual) %}
+    {% set nova_direcao = ('desc' if direcao_atual == 'asc' else 'asc') if ordem_atual == coluna else 'asc' %}
+    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">
+        <a href="{{ url_for('list_softwares', ordem=coluna, direcao=nova_direcao, categoria=categoria, empresa=empresa_filtro) }}" class="hover:text-blue-600">
+            {{ rotulo }}{% if ordem_atual == coluna %}<i class="fas fa-sort-{{ 'up' if direcao_atual == 'asc' else 'down' }} ml-1"></i>{% endif %}
+        </a>
+    </th>
+{% endmacro %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-3xl font-bold text-[#182387]"><i class="fas fa-code mr-2 text-[#182387]"></i>Softwares</h1>
+    <div class="flex items-center gap-4">
+        <form method="GET" action="{{ url_for('list_softwares') }}" class="flex items-center gap-4">
+            <select name="categoria" onchange="this.form.submit()" class="border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="all" {% if categoria == 'all' %}selected{% endif %}>Todas as Categorias</option>
+                <option value="Sistema Operacional" {% if categoria == 'Sistema Operacional' %}selected{% endif %}>Sistema Operacional</option>
+                <option value="Banco de dados" {% if categoria == 'Banco de dados' %}selected{% endif %}>Banco de dados</option>
+                <option value="Sistema de Gestão" {% if categoria == 'Sistema de Gestão' %}selected{% endif %}>Sistema de Gestão</option>
+                <option value="Antivírus" {% if categoria == 'Antivírus' %}selected{% endif %}>Antivírus</option>
+                <option value="Software de Escritório" {% if categoria == 'Software de Escritório' %}selected{% endif %}>Software de Escritório</option>
+                <option value="Software de Desenvolvimento" {% if categoria == 'Software de Desenvolvimento' %}selected{% endif %}>Software de Desenvolvimento</option>
+                <option value="Software de Geoprocessamento" {% if categoria == 'Software de Geoprocessamento' %}selected{% endif %}>Software de Geoprocessamento</option>
+                <option value="Software de Inteligência Artificial" {% if categoria == 'Software de Inteligência Artificial' %}selected{% endif %}>Software de Inteligência Artificial</option>
+                <option value="Software Utilitário" {% if categoria == 'Software Utilitário' %}selected{% endif %}>Software Utilitário</option>
+                <option value="Software Geral" {% if categoria == 'Software Geral' %}selected{% endif %}>Software Geral</option>
+            </select>
+            <select name="empresa" onchange="this.form.submit()" class="border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="all" {% if empresa_filtro == 'all' %}selected{% endif %}>Todas as Empresas</option>
+                {% for e in empresas %}
+                <option value="{{ e.id }}" {% if empresa_filtro == e.id | string %}selected{% endif %}>{{ e.nome_fantasia }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        {{ botao_relatorio('softwares', empresa_filtro, categoria) }}
+        <a href="{{ url_for('novo_software') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+            <i class="fas fa-plus mr-2"></i>Novo
+        </a>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    {% if items %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+                <tr>
+                    {{ th_ord('nome', 'Nome', ordem, direcao) }}
+                    {{ th_ord('codigo_equipamento', 'Equipamento que está Instalado', ordem, direcao) }}
+                    {{ th_ord('categoria', 'Categoria', ordem, direcao) }}
+                    {{ th_ord('marca', 'Marca', ordem, direcao) }}
+                    {{ th_ord('tipo_licenciamento', 'Licenciamento', ordem, direcao) }}
+                    {{ th_ord('validade_assinatura', 'Validade', ordem, direcao) }}
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-200">
+                {% for item in items %}
+                {% set equipamento_em_uso = item.codigo_equipamento != 'Não está instalado' %}
+                <tr>
+                    <td class="px-4 py-3 text-sm text-slate-700 font-medium">{{ item.nome }}</td>
+                    <td class="px-4 py-3 text-sm text-slate-700">{{ item.codigo_equipamento }}</td>
+                    <td class="px-4 py-3 text-sm text-slate-700">
+                        <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">{{ item.categoria }}</span>
+                    </td>
+                    <td class="px-4 py-3 text-sm text-slate-700">{{ item.marca }}</td>
+                    <td class="px-4 py-3 text-sm text-slate-700">{{ item.tipo_licenciamento }}</td>
+                    <td class="px-4 py-3 text-sm text-slate-700">{{ item.validade_assinatura.strftime('%d/%m/%Y') if item.validade_assinatura else '-' }}</td>
+                    <td class="px-4 py-3 text-sm whitespace-nowrap">
+                        <a href="{{ url_for('editar_software', id=item.id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="POST" action="{{ url_for('excluir_software', id=item.id) }}" class="inline">
+                            {% if equipamento_em_uso %}<span title="Em uso" class="inline-block">{% endif %}
+                                <button type="submit" {% if equipamento_em_uso %}disabled title="Em uso"{% else %}onclick="return confirm('Tem certeza que deseja excluir?')"{% endif %} class="{% if equipamento_em_uso %}bg-red-600 opacity-50 cursor-not-allowed{% else %}bg-red-600 hover:bg-red-700{% endif %} text-white px-3 py-1 rounded text-sm ml-1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            {% if equipamento_em_uso %}</span>{% endif %}
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="p-8 text-center text-slate-500">
+        <i class="fas fa-code text-4xl mb-3"></i>
+        <p>Nenhum software cadastrado.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

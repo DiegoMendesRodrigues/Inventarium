@@ -1,0 +1,118 @@
+<!-- Sistema criado por Diego Mendes Rodrigues, utilizando desenvolvimento de software e inteligência artificial -->
+{% extends "base.html" %}
+{% block title %}{% if item %}Editar{% else %}Novo{% endif %} Tablet - Inventarium{% endblock %}
+{% block content %}
+<h1 class="text-3xl font-bold text-[#182387] mb-6"><i class="fas fa-tablet-alt mr-2 text-[#182387]"></i>{% if item %}Editar{% else %}Novo{% endif %} Tablet</h1>
+
+<div class="bg-white rounded-xl shadow-sm p-6">
+    <form method="POST" action="{{ request.path }}">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Código Interno *</label>
+                <input type="text" name="codigo_interno" maxlength="50" value="{{ item.codigo_interno if item else proximo_codigo }}" readonly required
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Empresa *</label>
+                <select name="empresa_id" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for e in empresas %}
+                    <option value="{{ e.id }}" {% if item and item.empresa_id == e.id %}selected{% endif %}>{{ e.nome_fantasia }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Marca *</label>
+                <select name="marca" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {{ lista_informacao(marcas, item.marca if item else '', ['Outra']) }}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Modelo *</label>
+                <input type="text" name="nome" maxlength="50" value="{{ item.nome if item and item.nome else '' }}" required
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Cor *</label>
+                <select name="cor" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['Amarelo', 'Azul-claro', 'Azul-escuro', 'Azul', 'Bege', 'Branco', 'Cinza', 'Dourado', 'Estelar', 'Grafite', 'Laranja', 'Marrom', 'Prata', 'Preto', 'Rosa-dourado', 'Rosa', 'Roxo', 'Titânio', 'Verde-claro', 'Verde-escuro', 'Verde', 'Vermelho', 'Outra'] %}
+                    <option value="{{ opt }}" {% if item and item.cor == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Armazenamento *</label>
+                <select name="armazenamento" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['16 GB', '32 GB', '64 GB', '128 GB', '256 GB', '512 GB', '1 TB', 'mais que 1TB'] %}
+                    <option value="{{ opt }}" {% if item and item.armazenamento == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Memória RAM *</label>
+                <select name="memoria_ram" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['1 GB', '2 GB', '3 GB', '4 GB', '5 GB', '6 GB', '7 GB', '8 GB', '10 GB', '12 GB', '14 GB', '16 GB', '32 GB', '64 GB', '128 GB', 'mais que 128 GB'] %}
+                    <option value="{{ opt }}" {% if item and item.memoria_ram == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Resolução da tela *</label>
+                <select name="resolucao_tela" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {% for opt in ['6 polegadas', '7 polegadas', '8 polegadas', '9 polegadas', '10 polegadas', '11 polegadas', '12 polegadas', '13 polegadas', '14 polegadas', '15 polegadas', '16 polegadas', 'maior que 16 polegadas'] %}
+                    <option value="{{ opt }}" {% if item and item.resolucao_tela == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Conectividade *</label>
+                <select name="conectividade" multiple size="6" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="" {% if not item or not item.conectividade %}selected{% endif %}>Selecione</option>
+                    {% for opt in ['3G', '4G', '5G', 'WiFi', 'Bluetooth'] %}
+                    <option value="{{ opt }}" {% if item and item.conectividade and opt in item.conectividade.split(', ') %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Sistema Operacional *</label>
+                <select name="sistema_operacional" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['Android', 'Linux', 'macOS', 'Outro'] %}
+                    <option value="{{ opt }}" {% if item and item.sistema_operacional == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Local de Uso</label>
+                <select name="local_de_uso_id" data-selecionado="{{ item.area_local_id if item and item.area_local_id else '' }}"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Usuário</label>
+                <select name="usuario_id" data-selecionado="{{ item.usuario_id if item and item.usuario_id else '' }}"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Outras Informações</label>
+                <textarea name="outras_informacoes" rows="3"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{% if item %}{{ item.outras_informacoes }}{% endif %}</textarea>
+            </div>
+        </div>
+        <div class="mt-6 flex gap-4">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-save mr-2"></i>Salvar
+            </button>
+            <a href="{{ url_for('list_tablets') }}" class="bg-red-800 hover:bg-red-900 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-times mr-2"></i>Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

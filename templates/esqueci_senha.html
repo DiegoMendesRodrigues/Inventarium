@@ -1,0 +1,43 @@
+<!-- Sistema criado por Diego Mendes Rodrigues, utilizando desenvolvimento de software e inteligência artificial -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esqueci minha senha - Inventarium</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-[#f3f4f6] min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-sm w-full max-w-md p-8">
+        <div class="flex items-center justify-center gap-3 mb-8">
+            <i class="fas fa-server text-3xl text-[#182387]"></i>
+            <span class="text-3xl font-bold text-[#182387]">Inventarium</span>
+        </div>
+
+        {% if notificacao %}
+        <div class="mb-6 p-4 rounded-lg bg-blue-100 text-blue-900 border border-blue-300 text-center text-sm">Caso seu e-mail esteja cadastrado, você receberá as informações de acesso nos próximos minutos.</div>
+        <a href="{{ url_for('autenticar') }}"
+            class="w-full block text-center bg-[#182387] hover:bg-[#0f1a66] text-white px-6 py-2 rounded-lg">
+            <i class="fas fa-check mr-2"></i>Ok
+        </a>
+        {% else %}
+        <form method="POST" action="{{ url_for('esqueci_senha') }}">
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-slate-700 mb-1">E-mail</label>
+                <input type="email" name="email" maxlength="150" required autocomplete="email"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <button type="submit" class="w-full bg-[#182387] hover:bg-[#0f1a66] text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-paper-plane mr-2"></i>Recuperar
+            </button>
+        </form>
+
+        <p class="text-center text-sm text-slate-500 mt-8">
+            <a href="{{ url_for('autenticar') }}" class="hover:underline">Voltar para a autenticação</a>
+        </p>
+        {% endif %}
+    </div>
+</body>
+</html>

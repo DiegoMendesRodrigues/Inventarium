@@ -1,0 +1,117 @@
+<!-- Sistema criado por Diego Mendes Rodrigues, utilizando desenvolvimento de software e inteligência artificial -->
+{% extends "base.html" %}
+{% block title %}Webservices - Inventarium{% endblock %}
+{% block content %}
+<h1 class="text-3xl font-bold text-[#182387] mb-6"><i class="fas fa-plug mr-2 text-[#182387]"></i>Webservices</h1>
+<p class="text-slate-700 mb-6">A Necessidade da chave controla as permissões: “Alterar e visualizar alterações” autoriza GET, POST e PUT quando disponíveis; “Visualizar alterações” autoriza somente GET. Requisições sem permissão recebem 403.</p>
+
+<div class="w-full rounded-lg bg-[#ebf4fb] border border-[#60b0fe] p-4 mb-4">
+    <div class="flex items-center gap-4">
+        <div class="w-[100px] h-[40px] shrink-0 rounded bg-[#60b0fe] border border-[#60b0fe] flex items-center justify-center text-white font-bold">GET</div>
+        <span class="text-black font-bold whitespace-nowrap">/resumo</span>
+        <span class="text-black">Retorna o resumo dos ativos cadastrados</span>
+        <i class="fas fa-lock text-gray-700 ml-auto"></i>
+        <i class="fas fa-chevron-down text-gray-700 cursor-pointer" id="seta-resumo" onclick="alternarDetalhe('detalhe-resumo', 'seta-resumo')"></i>
+    </div>
+    <div id="detalhe-resumo" class="hidden mt-4 text-black whitespace-pre-line">Autenticação: Bearer Token
+
+Parâmetros: Nenhum
+
+Códigos de Resposta (Status Codes): Em caso de sucesso (200 OK) ou erro (401 ou 403)
+
+Corpo da Requisição (Payload):
+- Formato: JSON
+- Informações: Resumo dos ativos cadastrados, separados dentre as empresas cadastradas no sistema</div>
+</div>
+
+<div class="w-full rounded-lg bg-[#ebf4fb] border border-[#60b0fe] p-4 mb-4">
+    <div class="flex items-center gap-4">
+        <div class="w-[100px] h-[40px] shrink-0 rounded bg-[#60b0fe] border border-[#60b0fe] flex items-center justify-center text-white font-bold">GET</div>
+        <span class="text-black font-bold whitespace-nowrap">/ativos</span>
+        <span class="text-black">Retorna todos os ativos cadastrados</span>
+        <i class="fas fa-lock text-gray-700 ml-auto"></i>
+        <i class="fas fa-chevron-down text-gray-700 cursor-pointer" id="seta-ativos" onclick="alternarDetalhe('detalhe-ativos', 'seta-ativos')"></i>
+    </div>
+    <div id="detalhe-ativos" class="hidden mt-4 text-black whitespace-pre-line">Autenticação: Bearer Token
+
+Parâmetros: Nenhum
+
+Códigos de Resposta (Status Codes): Em caso de sucesso (200 OK) ou erro (401 ou 403)
+
+Corpo da Requisição (Payload):
+- Formato: JSON
+- Informações: Todos os os ativos cadastrados no sistema, com as informações detalhadas de cada um deles</div>
+</div>
+
+<div class="w-full rounded-lg bg-[#ebf4fb] border border-[#60b0fe] p-4 mb-4">
+    <div class="flex items-start gap-4">
+        <div class="w-[100px] h-[40px] shrink-0 rounded bg-[#60b0fe] border border-[#60b0fe] flex items-center justify-center text-white font-bold">GET</div>
+        <span class="text-black font-bold whitespace-nowrap">/informacoes</span>
+        <span class="text-black">Retorna as informações utilizadas nos cadastros dos ativos, como inf_disco_tamanho, inf_hacks, inf_impressoras, inf_memorias_ram_qtde, inf_memorias_ram_tipo, inf_nobreaks, inf_perifericos, inf_perifericos_computador, inf_placa_mae_desktop, inf_placa_mae_notebook, inf_placa_mae_servidor, inf_placa_rede, inf_placas_de_video, inf_processadores_desktop, inf_processadores_notebook, inf_processadores_servidor, inf_servidores, inf_so_desktop, inf_so_servidores, inf_sofwares_licencas, inf_tablets_marcas, inf_tamanho_monitor, inf_televisao_marca</span>
+        <i class="fas fa-lock text-gray-700 ml-auto"></i>
+        <i class="fas fa-chevron-down text-gray-700 cursor-pointer" id="seta-informacoes" onclick="alternarDetalhe('detalhe-informacoes', 'seta-informacoes')"></i>
+    </div>
+    <div id="detalhe-informacoes" class="hidden mt-4 text-black whitespace-pre-line">Autenticação: Bearer Token
+
+Parâmetros: Nenhum
+
+Códigos de Resposta (Status Codes): Em caso de sucesso (200 OK) ou erro (401 ou 403)
+
+Corpo da Requisição (Payload):
+- Formato: JSON
+- Informações: Todos as informações que estão nas tabelas auxiliares utilizadas no registro dos ativos, como os processadores, memória RAM, tamanho dos discos para armazenamento, marcas de placas mãe, resoluções de monitores, dentre outras</div>
+</div>
+
+<div class="w-full rounded-lg bg-[#e7f6ef] border border-[#48cd8e] p-4 mb-4">
+    <div class="flex items-center gap-4">
+        <div class="w-[100px] h-[40px] shrink-0 rounded bg-[#48cd8e] border border-[#48cd8e] flex items-center justify-center text-white font-bold">POST</div>
+        <span class="text-black font-bold whitespace-nowrap">/informacoes</span>
+        <span class="text-black">Criar um novo registro possuindo uma informação que será utilizada no cadastro de ativos</span>
+        <i class="fas fa-lock text-gray-700 ml-auto"></i>
+        <i class="fas fa-chevron-down text-gray-700 cursor-pointer" id="seta-post" onclick="alternarDetalhe('detalhe-post', 'seta-post')"></i>
+    </div>
+    <div id="detalhe-post" class="hidden mt-4 text-black whitespace-pre-line">Autenticação: Bearer Token
+
+Parâmetros:
+- tabela_informacoes (string): sendo uma das seguintes tabelas: inf_disco_tamanho, inf_hacks, inf_impressoras, inf_memorias_ram_qtde, inf_memorias_ram_tipo, inf_nobreaks, inf_perifericos, inf_perifericos_computador, inf_placa_mae_desktop, inf_placa_mae_notebook, inf_placa_mae_servidor, inf_placa_rede, inf_placas_de_video, inf_processadores_desktop, inf_processadores_notebook, inf_processadores_servidor, inf_servidores, inf_so_desktop, inf_so_servidores, inf_sofwares_licencas, inf_tablets_marcas, inf_tamanho_monitor, inf_televisao_marca
+- nome (string): sendo a informação que será adicionada, como por exemplo, em inf_placa_mae_desktop adicionar ASUS
+
+Códigos de Resposta (Status Codes): Em caso de sucesso (201 Created) ou erro (400, 401 ou 403)
+
+Corpo da Requisição (Payload):
+- Formato: JSON
+- Informações: identificador do registro adicionado</div>
+</div>
+
+<div class="w-full rounded-lg bg-[#fbf1e5] border border-[#fba12e] p-4 mb-4">
+    <div class="flex items-center gap-4">
+        <div class="w-[100px] h-[40px] shrink-0 rounded bg-[#fba12e] border border-[#fba12e] flex items-center justify-center text-white font-bold">PUT</div>
+        <span class="text-black font-bold whitespace-nowrap">/informacoes</span>
+        <span class="text-black">Alterar um registro de uma informação que é utilizado no cadastro de ativos</span>
+        <i class="fas fa-lock text-gray-700 ml-auto"></i>
+        <i class="fas fa-chevron-down text-gray-700 cursor-pointer" id="seta-put" onclick="alternarDetalhe('detalhe-put', 'seta-put')"></i>
+    </div>
+    <div id="detalhe-put" class="hidden mt-4 text-black whitespace-pre-line">Autenticação: Bearer Token
+
+Parâmetros:
+- tabela_informacoes (string): sendo uma das seguintes tabelas: inf_disco_tamanho, inf_hacks, inf_impressoras, inf_memorias_ram_qtde, inf_memorias_ram_tipo, inf_nobreaks, inf_perifericos, inf_perifericos_computador, inf_placa_mae_desktop, inf_placa_mae_notebook, inf_placa_mae_servidor, inf_placa_rede, inf_placas_de_video, inf_processadores_desktop, inf_processadores_notebook, inf_processadores_servidor, inf_servidores, inf_so_desktop, inf_so_servidores, inf_sofwares_licencas, inf_tablets_marcas, inf_tamanho_monitor, inf_televisao_marca
+- codigo (string): sendo o identificador do registro que será alterado na tabela
+- nome (string): sendo a informação que será alterada, como por exemplo, em inf_placa_mae_desktop alterar ASUS para ASRock
+
+Códigos de Resposta (Status Codes): Em caso de sucesso (201 Created) ou erro (400, 401 ou 403)
+
+Corpo da Requisição (Payload):
+- Formato: JSON
+- Informações: identificador do registro adicionado</div>
+</div>
+
+<script>
+function alternarDetalhe(idDetalhe, idSeta) {
+    const detalhe = document.getElementById(idDetalhe);
+    const seta = document.getElementById(idSeta);
+    const fechado = detalhe.classList.toggle('hidden');
+    seta.classList.toggle('fa-chevron-down', fechado);
+    seta.classList.toggle('fa-chevron-up', !fechado);
+}
+</script>
+{% endblock %}

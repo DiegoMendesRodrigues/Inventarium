@@ -1,0 +1,112 @@
+<!-- Sistema criado por Diego Mendes Rodrigues, utilizando desenvolvimento de software e inteligência artificial -->
+{% extends "base.html" %}
+{% block title %}{% if item %}Editar{% else %}Novo{% endif %} Software - Inventarium{% endblock %}
+{% block content %}
+<h1 class="text-3xl font-bold text-[#182387] mb-6"><i class="fas fa-code mr-2 text-[#182387]"></i>{% if item %}Editar{% else %}Novo{% endif %} Software</h1>
+
+<div class="bg-white rounded-xl shadow-sm p-6">
+    <form method="POST" action="{{ request.path }}">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Categoria *</label>
+                <select name="categoria" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for c in categorias %}
+                    <option value="{{ c }}" {% if item and item.categoria == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Marca *</label>
+                <input type="text" name="marca" maxlength="50" value="{{ item.marca if item else '' }}" required
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Nome *</label>
+                <input type="text" name="nome" maxlength="50" value="{{ item.nome if item else '' }}" required
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Tipo de Licenciamento *</label>
+                <div class="relative">
+                    <input type="text" name="tipo_licenciamento" id="tipo_licenciamento" required autocomplete="off"
+                        value="{{ tipo_licenciamento }}"
+                        placeholder="Selecione ou digite para buscar"
+                        data-busca-campo="tipo_licenciamento" data-busca-extras="Outro" data-busca-limite="5"
+                        oninput="toggleValidade()"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <div id="lista-busca-tipo_licenciamento"
+                        class="hidden absolute z-20 w-full mt-1 max-h-60 overflow-y-auto rounded-lg border border-slate-300 bg-white shadow-lg"></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">Digite 3 caracteres para ver 5 sugestões.</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Validade da Assinatura</label>
+                <input type="date" name="validade_assinatura" id="validade_assinatura" value="{{ item.validade_assinatura.isoformat() if item and item.validade_assinatura else '' }}"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400" disabled>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Chave</label>
+                <input type="text" name="chave" maxlength="300" value="{{ item.chave if item else '' }}"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Empresa</label>
+                <select name="empresa_id" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for e in empresas %}
+                    <option value="{{ e.id }}" {% if item and item.empresa_id == e.id %}selected{% endif %}>{{ e.nome_fantasia }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Equipamento que está Instalado *</label>
+                <select name="codigo_equipamento" required multiple size="10"
+                    data-selecionado="{{ equipamentos_selecionados | default('') }}"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    <option value="nao-instalado">Não está instalado</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Local de Uso</label>
+                <select name="local_de_uso_id" data-selecionado="{{ item.area_local_id if item and item.area_local_id else '' }}" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Descrição</label>
+                <textarea name="descricao" rows="3"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{% if item %}{{ item.descricao }}{% endif %}</textarea>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Outras Informações</label>
+                <textarea name="outras_informacoes" rows="3"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{% if item %}{{ item.outras_informacoes }}{% endif %}</textarea>
+            </div>
+        </div>
+        <div class="mt-6 flex gap-4">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-save mr-2"></i>Salvar
+            </button>
+            <a href="{{ url_for('list_softwares') }}" class="bg-red-800 hover:bg-red-900 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-times mr-2"></i>Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<script type="application/json" id="valores-tipo_licenciamento">{{ licencas | tojson }}</script>
+<script>
+function toggleValidade() {
+    const tipo = document.getElementById('tipo_licenciamento');
+    const campo = document.getElementById('validade_assinatura');
+    const valor = (tipo.value || '').toLowerCase();
+    campo.disabled = valor.indexOf('assinatura') === -1;
+}
+document.getElementById('lista-busca-tipo_licenciamento').addEventListener('mousedown', function () {
+    window.setTimeout(toggleValidade, 0);
+});
+toggleValidade();
+</script>
+{% endblock %}

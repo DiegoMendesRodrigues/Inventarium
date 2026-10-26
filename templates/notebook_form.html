@@ -1,0 +1,223 @@
+<!-- Sistema criado por Diego Mendes Rodrigues, utilizando desenvolvimento de software e inteligência artificial -->
+{% extends "base.html" %}
+{% block title %}{% if item %}Editar{% else %}Novo{% endif %} Notebook - Inventarium{% endblock %}
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-[#182387]"><i class="fas fa-laptop mr-2 text-[#182387]"></i>{% if item %}Editar{% else %}Novo{% endif %} Notebook</h1>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm p-6">
+    <form method="POST" action="{{ request.path }}">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Código Interno *</label>
+                <input type="text" name="codigo_interno" maxlength="50" required
+                    value="{{ item.codigo_interno if item else proximo_codigo }}" readonly
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Empresa *</label>
+                <select name="empresa_id" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for e in empresas %}
+                    <option value="{{ e.id }}" {% if item and item.empresa_id == e.id %}selected{% endif %}>{{ e.nome_fantasia }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Host *</label>
+                <input type="text" name="host" maxlength="150" required
+                    value="{{ item.host if item else '' }}"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Marca *</label>
+                <select name="marca" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['ASUS', 'Acer', 'Apple', 'Dell', 'HP', 'Lenovo', 'Samsumg', 'Outra marca'] %}
+                    <option value="{{ opt }}" {% if item and item.marca == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Tipo de Memória RAM *</label>
+                <select name="tipo_memoria_ram" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {{ lista_informacao(tipos_memoria_ram, item.tipo_memoria_ram if item else '', ['Outro']) }}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Quantidade de Memória RAM *</label>
+                <select name="memoria_ram" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {{ lista_informacao(memorias_ram, item.memoria_ram if item else '', ['Outro']) }}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Disco Principal de Armazenamento *</label>
+                <select name="disco1" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {{ lista_informacao(discos, item.disco1 if item else '', ['Não utilizado']) }}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Disco Auxiliar de Armazenamento *</label>
+                <select name="disco2" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {{ lista_informacao(discos, item.disco2 if item else '', ['Não utilizado']) }}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Processador *</label>
+                <div class="relative">
+                    <input type="text" name="processador" required autocomplete="off"
+                        value="{{ item.processador if item else '' }}"
+                        placeholder="Selecione ou digite para buscar"
+                        data-busca-campo="processador" data-busca-extras="Outro"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <div id="lista-busca-processador"
+                        class="hidden absolute z-20 w-full mt-1 max-h-60 overflow-y-auto rounded-lg border border-slate-300 bg-white shadow-lg"></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">Digite 3 caracteres para ver 5 sugestões.</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Placa de Vídeo *</label>
+                <div class="relative">
+                    <input type="text" name="placa_de_video" required autocomplete="off"
+                        value="{{ item.placa_de_video if item else '' }}"
+                        placeholder="Selecione ou digite para buscar"
+                        data-busca-campo="placa_de_video" data-busca-extras="Integrada|Outra" data-busca-limite="8"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <div id="lista-busca-placa_de_video"
+                        class="hidden absolute z-20 w-full mt-1 max-h-60 overflow-y-auto rounded-lg border border-slate-300 bg-white shadow-lg"></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">Digite 3 caracteres para ver 8 sugestões.</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Placa Mãe *</label>
+                <select name="placa_mae" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {{ lista_informacao(placas_mae, item.placa_mae if item else '', ['Outra']) }}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Sistema Operacional *</label>
+                <div class="relative">
+                    <input type="text" name="sistema_operacional" required autocomplete="off"
+                        value="{{ item.sistema_operacional if item else '' }}"
+                        placeholder="Selecione ou digite para buscar"
+                        data-busca-campo="sistema_operacional" data-busca-extras="Outro" data-busca-limite="8"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <div id="lista-busca-sistema_operacional"
+                        class="hidden absolute z-20 w-full mt-1 max-h-60 overflow-y-auto rounded-lg border border-slate-300 bg-white shadow-lg"></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">Digite 3 caracteres para ver 8 sugestões.</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Placa de Rede Ethernet *</label>
+                <select name="placa_de_rede" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {{ lista_informacao(placas_rede, item.placa_de_rede if item else '', ['Outra', 'Não utilizada']) }}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Placa de Rede Ethernet Auxiliar *</label>
+                <select name="placa_de_rede_ethernet_2" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {{ lista_informacao(placas_rede, item.placa_de_rede_ethernet_2 if item else '', ['Outra', 'Não utilizada']) }}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Placa de Rede WiFi *</label>
+                <select name="placa_de_rede_wifi" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {{ lista_informacao(placas_rede, item.placa_de_rede_wifi if item else '', ['Outra', 'Não utilizada']) }}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Monitor Integrado (Resolução) *</label>
+                <select name="monitor1" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {{ lista_informacao(tamanhos_monitor, item.monitor1 if item else '', ['Outra', 'Não utilizado']) }}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Monitor Auxiliar *</label>
+                <select name="monitor2" required data-monitor-empresa
+                    data-equipamento-atual="{{ 'n-' ~ item.id if item else '' }}"
+                    data-selecionado="{{ item.monitor2 if item and item.monitor2 else '' }}"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    <option value="Não utilizado">Não utilizado</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Teclado *</label>
+                <select name="teclado" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['Padrão internacional', 'Padrão ABNT', 'Padrão ABNT2', 'Não utilizado'] %}
+                    <option value="{{ opt }}" {% if item and item.teclado == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Mouse *</label>
+                <select name="mouse" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['Integrado', 'Com fio', 'Sem fio', 'Não utilizado'] %}
+                    <option value="{{ opt }}" {% if item and item.mouse == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Usuário</label>
+                <select name="usuario_id" data-selecionado="{{ item.usuario_id if item and item.usuario_id else '' }}"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Local de Uso</label>
+                <select name="local_de_uso_id" data-selecionado="{{ item.area_local_id if item and item.area_local_id else '' }}" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                </select>
+            </div>
+            <div></div>
+
+            <!-- Caixas somente leitura de visualização (não são gravadas no banco) -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Periféricos</label>
+                <textarea rows="10" readonly
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-slate-50 text-slate-600">{% if item and perifericos_vinculados %}{% for p in perifericos_vinculados %}{{ p.descricao }}{% if p.marca %} - {{ p.marca }}{% endif %}{% if not loop.last %}
+{% endif %}{% endfor %}{% else %}Nenhum periférico cadastrado{% endif %}</textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Softwares</label>
+                <textarea rows="10" readonly
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-slate-50 text-slate-600">{% if item and softwares_vinculados %}{% for s in softwares_vinculados %}{{ s.nome }}{% if s.categoria %} ({{ s.categoria }}){% endif %}{% if not loop.last %}
+{% endif %}{% endfor %}{% else %}Nenhum software cadastrado{% endif %}</textarea>
+            </div>
+        </div>
+
+        <div class="mt-6 flex gap-4">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-save mr-2"></i>Salvar
+            </button>
+            <a href="{{ url_for('list_notebooks') }}" class="bg-red-800 hover:bg-red-900 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-times mr-2"></i>Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+<script type="application/json" id="valores-processador">{{ processadores | tojson }}</script>
+<script type="application/json" id="valores-sistema_operacional">{{ sistemas_operacionais | tojson }}</script>
+<script type="application/json" id="valores-placa_de_video">{{ placas_de_video | tojson }}</script>
+{% endblock %}

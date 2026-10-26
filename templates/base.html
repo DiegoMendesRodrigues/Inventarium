@@ -1,0 +1,582 @@
+<!-- Sistema criado por Diego Mendes Rodrigues, utilizando desenvolvimento de software e inteligência artificial -->
+<!DOCTYPE html>
+{% macro lista_informacao(valores, selecionado, extras) %}
+<option value="">Selecione</option>
+{% for valor in valores %}
+<option value="{{ valor }}" {% if selecionado == valor %}selected{% endif %}>{{ valor }}</option>
+{% endfor %}
+{% if selecionado and selecionado not in valores and selecionado not in extras %}
+<option value="{{ selecionado }}" selected>{{ selecionado }}</option>
+{% endif %}
+{% for extra in extras %}
+<option value="{{ extra }}" {% if selecionado == extra %}selected{% endif %}>{{ extra }}</option>
+{% endfor %}
+{% endmacro %}
+{% macro botao_relatorio(area, empresa='all', categoria='all') %}
+<a href="{{ url_for('baixar_relatorio_excel', relatorio=area, empresa=empresa, categoria=categoria) }}"
+    class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg" title="Exportar para Excel" aria-label="Exportar para Excel">
+    <i class="fas fa-file-excel"></i>
+</a>
+{% endmacro %}
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Inventarium{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+.sidebar { height: 100vh; overflow-y: auto; transition: transform 0.3s ease; }
+.sidebar-oculta { transform: translateX(-100%); }
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+        .main-content { height: 100vh; overflow-y: auto; transition: margin-left 0.3s ease; }
+        .main-content::-webkit-scrollbar { width: 8px; }
+        .main-content::-webkit-scrollbar-track { background: #f1f5f9; }
+        .main-content::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        .main-content::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .nav-link { transition: all 0.2s; }
+        .nav-link:hover { background-color: rgba(255,255,255,0.1); }
+        .barra-icone { transition: all 0.2s; padding: 12px; border-radius: 8px; cursor: pointer; }
+        .barra-icone:hover { background-color: rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <div class="barra-do-site fixed left-0 top-0 w-[50px] h-screen bg-[#394da1] z-40 flex flex-col items-center justify-between py-5 shadow-md border-r border-slate-200">
+            <span class="barra-icone barra-menu text-white" title="Ocultar o menu">
+                <i class="fas fa-bars text-2xl"></i>
+            </span>
+            <button type="button" class="barra-icone barra-gestao text-white border-0 bg-transparent" title="Gestão" aria-label="Gestão">
+                <i class="fas fa-gear text-2xl"></i>
+            </button>
+            <div class="mt-auto flex flex-col items-center gap-3">
+                <button type="button" onclick="document.getElementById('modal-alterar-senha').classList.remove('hidden')"
+                    class="barra-icone text-white border-0 bg-transparent" title="Alterar Senha">
+                    <i class="fas fa-lock text-2xl"></i>
+                </button>
+                <form method="POST" action="{{ url_for('sair') }}" class="m-0">
+                    <button type="submit" class="barra-icone text-white border-0 bg-transparent" title="Sair">
+                        <i class="fas fa-right-from-bracket text-2xl"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        <aside class="sidebar sidebar-ativos w-64 bg-[#182387] text-white fixed left-[50px] top-0 z-30">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-center">
+                    <i class="fas fa-server mr-2"></i>Inventarium
+                </h1>
+                <p class="text-slate-400 text-xs text-center mt-1">Inventário de Ativos de TI</p>
+            </div>
+            <div class="mx-4 border-b border-white"></div>
+            <nav class="p-4 space-y-1">
+                <a href="{{ url_for('dashboard') }}" class="nav-link flex items-center px-4 py-3 rounded-lg text-sm">
+                    <i class="fas fa-tachometer-alt w-5 mr-3"></i>Painel Gerencial
+                </a>
+                
+                <div class="pt-4 pb-2">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider px-4">Hardware</span>
+                </div>
+                <a href="{{ url_for('list_estacoes_all_in_one') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-desktop w-5 mr-3"></i>Estações All-in-One
+                </a>
+                <a href="{{ url_for('list_workstations') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-desktop w-5 mr-3"></i>Estações de Trabalho
+                </a>
+                <a href="{{ url_for('list_notebooks') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-laptop w-5 mr-3"></i>Notebooks
+                </a>
+                <a href="{{ url_for('list_monitores') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-tv w-5 mr-3"></i>Monitores
+                </a>
+                <a href="{{ url_for('list_impressoras') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-print w-5 mr-3"></i>Impressoras
+                </a>
+                <a href="{{ url_for('list_perifericos') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-keyboard w-5 mr-3"></i>Periféricos
+                </a>
+                <a href="{{ url_for('list_tablets') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-tablet-alt w-5 mr-3"></i>Tablets
+                </a>
+                
+                <div class="pt-4 pb-2">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider px-4">Infraestrutura</span>
+                </div>
+                <a href="{{ url_for('list_modems') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-broadcast-tower w-5 mr-3"></i>Modens
+                </a>
+                <a href="{{ url_for('list_firewalls') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-shield-alt w-5 mr-3"></i>Firewalls
+                </a>
+                <a href="{{ url_for('list_roteadores') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-wifi w-5 mr-3"></i>Roteadores
+                </a>
+                <a href="{{ url_for('list_switches') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-network-wired w-5 mr-3"></i>Switches
+                </a>
+                <a href="{{ url_for('list_access_points') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-broadcast-tower w-5 mr-3"></i>Access Points
+                </a>
+                <a href="{{ url_for('list_servidores') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-hdd w-5 mr-3"></i>Servidores
+                </a>
+                <a href="{{ url_for('list_projetores') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-video w-5 mr-3"></i>Projetores
+                </a>
+                <a href="{{ url_for('list_televisoes') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-tv w-5 mr-3"></i>Televisões
+                </a>
+                <a href="{{ url_for('list_nobreaks') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-battery-full w-5 mr-3"></i>No-Breaks
+                </a>
+                <a href="{{ url_for('list_racks') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-layer-group w-5 mr-3"></i>Racks
+                </a>
+                
+                <div class="pt-4 pb-2">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider px-4">Software</span>
+                </div>
+                <a href="{{ url_for('list_softwares') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-code w-5 mr-3"></i>Softwares
+                </a>
+                
+                <div class="pt-4 pb-2">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider px-4">Empresa</span>
+                </div>
+                <a href="{{ url_for('list_empresas') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-building w-5 mr-3"></i>Empresas
+                </a>
+                <a href="{{ url_for('list_areas_locais') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-map-marker-alt w-5 mr-3"></i>Áreas e Locais
+                </a>
+                <a href="{{ url_for('list_usuarios') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-users w-5 mr-3"></i>Usuários
+                </a>
+
+                <div class="pt-4 pb-2">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider px-4">Ajuda</span>
+                </div>
+                <a href="{{ url_for('ajuda') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="far fa-circle-question w-5 mr-3"></i>Ajuda do Inventarium
+                </a>
+
+            </nav>
+        </aside>
+
+        <aside class="sidebar sidebar-gestao hidden w-64 bg-[#356cc5] text-white fixed left-[50px] top-0 z-30">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-center">
+                    <i class="fas fa-server mr-2"></i>Inventarium
+                </h1>
+                <p class="text-white text-xs text-center mt-1">Inventário de Ativos de TI</p>
+            </div>
+            <div class="mx-4 border-b border-white"></div>
+            <nav class="p-4 space-y-1">
+                <div class="pt-4 pb-2">
+                    <span class="text-xs text-white/75 uppercase tracking-wider px-4">Gestão</span>
+                </div>
+                <a href="{{ url_for('list_administradores') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-user-shield w-5 mr-3"></i>Administradores
+                </a>
+                <a href="{{ url_for('list_chaves_acesso') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-key w-5 mr-3"></i>Chaves de Acesso
+                </a>
+                <a href="{{ url_for('webservices') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-plug w-5 mr-3"></i>Webservices
+                </a>
+                <a href="{{ url_for('configuracoes_sistema') }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-gear w-5 mr-3"></i>Configurações
+                </a>
+                <div class="pt-4 pb-2">
+                    <span class="text-xs text-white/75 uppercase tracking-wider px-4">Configurações</span>
+                </div>
+                {% for configuracao in configuracoes_referencia %}
+                <a href="{{ url_for('list_configuracao_referencia', tabela=configuracao.tabela) }}" class="nav-link flex items-center px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-list w-5 mr-3"></i>{{ configuracao.rotulo }}
+                </a>
+                {% endfor %}
+            </nav>
+        </aside>
+
+        <main class="main-content flex-1 ml-[306px] p-8">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="mb-4 p-4 rounded-lg {% if category == 'success' %}bg-green-100 text-green-800 border border-green-300{% else %}bg-red-100 text-red-800 border border-red-300{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <div id="modal-alterar-senha" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+            <h2 class="text-lg font-semibold text-slate-800 mb-4">Alterar Senha</h2>
+            <form method="POST" action="{{ url_for('alterar_senha') }}">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Senha Atual</label>
+                    <input type="password" name="senha_atual" maxlength="50"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nova senha</label>
+                    <input type="password" name="nova_senha" maxlength="50"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Confirme a Nova senha</label>
+                    <input type="password" name="confirme_senha" maxlength="50"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="document.getElementById('modal-alterar-senha').classList.add('hidden')"
+                        class="bg-red-800 hover:bg-red-900 text-white px-6 py-2 rounded-lg">
+                        <i class="fas fa-times mr-2"></i>Cancelar
+                    </button>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
+                        <i class="fas fa-check mr-2"></i>Alterar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="modal-mensagem-alterar-senha" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm p-6 text-center">
+            <div class="text-4xl mb-3" id="icone-mensagem-alterar-senha"></div>
+            <p class="text-slate-700 mb-6" id="texto-mensagem-alterar-senha"></p>
+            <button type="button" id="ok-mensagem-alterar-senha"
+                class="bg-[#182387] hover:bg-[#0f1a66] text-white px-6 py-2 rounded-lg">Ok</button>
+        </div>
+    </div>
+    <script>
+    (function () {
+        const formularioAlterarSenha = document.querySelector('#modal-alterar-senha form');
+        const modalMensagem = document.getElementById('modal-mensagem-alterar-senha');
+        const textoMensagem = document.getElementById('texto-mensagem-alterar-senha');
+        const iconeMensagem = document.getElementById('icone-mensagem-alterar-senha');
+        let senhaAlteradaComSucesso = false;
+
+        function exibirMensagemAlterarSenha(texto, sucesso) {
+            senhaAlteradaComSucesso = sucesso;
+            textoMensagem.textContent = texto;
+            iconeMensagem.innerHTML = sucesso
+                ? '<i class="fas fa-circle-check text-green-600"></i>'
+                : '<i class="fas fa-circle-exclamation text-red-600"></i>';
+            modalMensagem.classList.remove('hidden');
+        }
+
+        formularioAlterarSenha.addEventListener('submit', evento => {
+            evento.preventDefault();
+            fetch('{{ url_for("alterar_senha") }}', {
+                method: 'POST',
+                body: new FormData(formularioAlterarSenha),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(resposta => resposta.json())
+                .then(dados => exibirMensagemAlterarSenha(dados.erro || 'Senha Alterada com Sucesso!', dados.ok))
+                .catch(() => exibirMensagemAlterarSenha('Não foi possível processar a solicitação.', false));
+        });
+
+        document.getElementById('ok-mensagem-alterar-senha').addEventListener('click', () => {
+            modalMensagem.classList.add('hidden');
+            if (senhaAlteradaComSucesso) {
+                window.location.href = '{{ url_for("autenticar") }}';
+            }
+        });
+    })();
+    </script>
+    <script>
+    {% if not perfil_admin %}
+    if (/\/editar\//.test(location.pathname) || document.querySelector('form[data-configuracoes-sistema]')) {
+        document.querySelectorAll('main input, main select, main textarea, main button[type="submit"]').forEach(campo => {
+            campo.disabled = true;
+            campo.style.opacity = '0.7';
+        });
+    } else {
+        document.querySelectorAll('main a[href$="/novo"]').forEach(linko => {
+            linko.removeAttribute('href');
+            linko.style.opacity = '0.5';
+            linko.style.cursor = 'not-allowed';
+            linko.title = 'Acesso restrito ao perfil Administrador';
+            linko.addEventListener('click', evento => evento.preventDefault());
+        });
+        document.querySelectorAll('main form[action*="/excluir"] button').forEach(botao => {
+            botao.disabled = true;
+            botao.style.opacity = '0.5';
+            botao.style.cursor = 'not-allowed';
+            botao.title = 'Acesso restrito ao perfil Administrador';
+        });
+    }
+    {% endif %}
+    function formatarCnpj(valor) {
+        let d = valor.replace(/\D/g, '').slice(0, 14);
+        let out = d.slice(0, 2);
+        if (d.length > 2) out += '.' + d.slice(2, 5);
+        if (d.length > 5) out += '.' + d.slice(5, 8);
+        if (d.length > 8) out += '/' + d.slice(8, 12);
+        if (d.length > 12) out += '-' + d.slice(12, 14);
+        return out;
+    }
+    function formatarCep(valor) {
+        let d = valor.replace(/\D/g, '').slice(0, 8);
+        if (d.length > 5) return d.slice(0, 5) + '-' + d.slice(5);
+        return d;
+    }
+    function formatarCpf(valor) {
+        let d = valor.replace(/\D/g, '').slice(0, 11);
+        let out = d.slice(0, 3);
+        if (d.length > 3) out += '.' + d.slice(3, 6);
+        if (d.length > 6) out += '.' + d.slice(6, 9);
+        if (d.length > 9) out += '-' + d.slice(9, 11);
+        return out;
+    }
+    function formatarTelefone(valor) {
+        let d = valor.replace(/\D/g, '').slice(0, 12);
+        if (!d) return '';
+        let out = '(' + d.slice(0, 2);
+        if (d.length >= 2) out += ')';
+        if (d.length > 2) out += ' ' + d.slice(2, 7);
+        if (d.length > 7) out += '-' + d.slice(7, 12);
+        return out;
+    }
+    const mascaras = { cnpj: formatarCnpj, cep: formatarCep, cpf: formatarCpf, telefones: formatarTelefone, telefone: formatarTelefone };
+    document.querySelectorAll('input[name]').forEach(function (input) {
+        const mascara = mascaras[input.name];
+        if (!mascara) return;
+        input.addEventListener('input', function () { this.value = mascara(this.value); });
+        input.value = mascara(input.value);
+    });
+    const AREAS_LOCAIS = {{ areas_locais | tojson }};
+    (function () {
+        const selEmpresa = document.querySelector('select[name="empresa_id"]');
+        const selLocal = document.querySelector('select[name="local_de_uso_id"]');
+        if (!selLocal) return;
+        function preencher(alvo) {
+            Array.from(selLocal.options).forEach(function (o) { if (o.value !== '') o.remove(); });
+            const emp = selEmpresa ? selEmpresa.value : '';
+            AREAS_LOCAIS.forEach(function (a) {
+                if (emp && String(a.empresa_id || '') !== emp) return;
+                const opt = document.createElement('option');
+                opt.value = String(a.id);
+                opt.textContent = a.area + ' - ' + a.local;
+                selLocal.appendChild(opt);
+            });
+            selLocal.value = alvo || '';
+            if (!selLocal.value) selLocal.value = '';
+        }
+        preencher(selLocal.dataset.selecionado || '');
+        if (selEmpresa) {
+            selEmpresa.addEventListener('change', function () { preencher(selLocal.value); });
+        }
+    })();
+    const USUARIOS = {{ usuarios_form | tojson }};
+    (function () {
+        const selEmpresa = document.querySelector('select[name="empresa_id"]');
+        const selUsu = document.querySelector('select[name="usuario_id"]');
+        if (!selUsu) return;
+        function preencher(alvo) {
+            Array.from(selUsu.options).forEach(function (o) { if (o.value !== '') o.remove(); });
+            const emp = selEmpresa ? selEmpresa.value : '';
+            USUARIOS.forEach(function (u) {
+                if (emp && String(u.empresa_id || '') !== emp) return;
+                const opt = document.createElement('option');
+                opt.value = String(u.id);
+                opt.textContent = u.nome_completo;
+                selUsu.appendChild(opt);
+            });
+            selUsu.value = alvo || '';
+            if (!selUsu.value) selUsu.value = '';
+        }
+        preencher(selUsu.dataset.selecionado || '');
+        if (selEmpresa) {
+            selEmpresa.addEventListener('change', function () { preencher(selUsu.value); });
+        }
+    })();
+    const EQUIPAMENTOS = {{ equipamentos_form | tojson }};
+    const EQUIPAMENTOS_MONITOR = {{ equipamentos_monitor_form | tojson }};
+    (function () {
+        const selEmpresa = document.querySelector('select[name="empresa_id"]');
+        const selEq = document.querySelector('select[name="codigo_equipamento"]');
+        if (!selEq) return;
+        function alvoAtual() {
+            if (selEq.multiple) {
+                return Array.from(selEq.selectedOptions).map(function (o) { return o.value; }).join(',');
+            }
+            return selEq.value;
+        }
+        function preencher(alvo) {
+            const fonte = selEq.hasAttribute('data-equipamentos-servidores') ? EQUIPAMENTOS_MONITOR : EQUIPAMENTOS;
+            const extras = [];
+            Array.from(selEq.options).forEach(function (o) {
+                if (o.value !== '' && o.value !== 'nao-instalado') {
+                    if (o.value === 'Outra') extras.push(o.value);
+                    o.remove();
+                }
+            });
+            const emp = selEmpresa ? selEmpresa.value : '';
+            fonte.forEach(function (e) {
+                if (emp && String(e.empresa_id || '') !== emp) return;
+                const opt = document.createElement('option');
+                opt.value = e.tipo + '-' + e.id;
+                opt.textContent = e.host;
+                selEq.appendChild(opt);
+            });
+            extras.forEach(function (v) {
+                const opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                selEq.appendChild(opt);
+            });
+            if (selEq.multiple) {
+                const alvos = (alvo || '').split(',').map(function (v) { return v.trim(); }).filter(function (v) { return v !== ''; });
+                Array.from(selEq.options).forEach(function (o) { o.selected = alvos.indexOf(o.value) !== -1; });
+            } else {
+                selEq.value = alvo || '';
+                if (!selEq.value) selEq.value = '';
+            }
+        }
+        preencher(selEq.dataset.selecionado || '');
+        if (selEmpresa) {
+            selEmpresa.addEventListener('change', function () { preencher(alvoAtual()); });
+        }
+    })();
+    const MONITORES = {{ monitores_form | tojson }};
+    document.querySelectorAll('select[data-monitor-empresa]').forEach(function (selMon) {
+        const selEmpresa = document.querySelector('select[name="empresa_id"]');
+        const atual = selMon.dataset.equipamentoAtual || '';
+        function preencher(alvo) {
+            Array.from(selMon.options).forEach(function (o) {
+                if (o.value !== '' && o.value !== 'Não utilizado') o.remove();
+            });
+            const emp = selEmpresa ? selEmpresa.value : '';
+            MONITORES.forEach(function (m) {
+                const doRegistro = atual !== '' && String(m.equipamento || '') === atual;
+                if (!doRegistro) {
+                    if (emp && String(m.empresa_id || '') !== emp) return;
+                    if (m.equipamento) return;
+                }
+                const opt = document.createElement('option');
+                opt.value = m.codigo_interno || '';
+                opt.textContent = [m.codigo_interno, m.marca, m.tipo, m.tamanho].join(' - ');
+                selMon.appendChild(opt);
+            });
+            selMon.value = alvo || '';
+            const legado = alvo && !MONITORES.some(function (m) { return m.codigo_interno === alvo; });
+            if (!selMon.value && legado) {
+                const opt = document.createElement('option');
+                opt.value = alvo;
+                opt.textContent = alvo;
+                selMon.appendChild(opt);
+                selMon.value = alvo;
+            }
+        }
+        preencher(selMon.dataset.selecionado || '');
+        if (selEmpresa) {
+            selEmpresa.addEventListener('change', function () { preencher(selMon.value); });
+        }
+    });
+    document.querySelectorAll('[data-busca-campo]').forEach(function (campo) {
+        const painel = document.getElementById('lista-busca-' + campo.dataset.buscaCampo);
+        const fonte = document.getElementById('valores-' + campo.dataset.buscaCampo);
+        if (!painel || !fonte) return;
+        const opcoes = JSON.parse(fonte.textContent);
+        const extras = (campo.dataset.buscaExtras || '').split('|').filter(function (v) { return v !== ''; });
+        const limite = parseInt(campo.dataset.buscaLimite || '5', 10);
+        function fechar() {
+            painel.classList.add('hidden');
+            painel.innerHTML = '';
+        }
+        function mostrar(valores) {
+            painel.innerHTML = '';
+            valores.forEach(function (valor) {
+                const botao = document.createElement('button');
+                botao.type = 'button';
+                botao.className = 'w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-blue-50';
+                botao.textContent = valor === '' ? 'Selecione' : valor;
+                botao.addEventListener('mousedown', function (evento) {
+                    evento.preventDefault();
+                    campo.value = valor;
+                    fechar();
+                });
+                painel.appendChild(botao);
+            });
+            painel.classList.remove('hidden');
+        }
+        function atualizar() {
+            const texto = campo.value.trim();
+            if (texto.length === 0) {
+                mostrar([''].concat(extras));
+                return;
+            }
+            if (texto.length < 3) {
+                fechar();
+                return;
+            }
+            const termo = texto.toLowerCase();
+            const achados = [];
+            for (let i = 0; i < opcoes.length && achados.length < limite; i++) {
+                if (opcoes[i].toLowerCase().indexOf(termo) !== -1) achados.push(opcoes[i]);
+            }
+            extras.forEach(function (extra) {
+                if (achados.indexOf(extra) === -1) achados.push(extra);
+            });
+            mostrar(achados);
+        }
+        campo.addEventListener('input', atualizar);
+        campo.addEventListener('focus', function () {
+            if (campo.value.trim().length < 3) atualizar();
+        });
+        campo.addEventListener('keydown', function (evento) {
+            if (evento.key === 'Escape') fechar();
+        });
+        document.addEventListener('click', function (evento) {
+            if (!painel.contains(evento.target) && evento.target !== campo) fechar();
+        });
+    });
+    (function () {
+        const sidebarAtivos = document.querySelector('.sidebar-ativos');
+        const sidebarGestao = document.querySelector('.sidebar-gestao');
+        const mainContent = document.querySelector('.main-content');
+        const botaoMenu = document.querySelector('.barra-do-site .barra-menu');
+        const botaoGestao = document.querySelector('.barra-do-site .barra-gestao');
+        let aberto = localStorage.getItem('menuAberto') !== 'false';
+        let menuGestaoAtivo = localStorage.getItem('menuLateral') === 'gestao';
+        function aplicarMenu() {
+            sidebarAtivos.classList.toggle('hidden', menuGestaoAtivo);
+            sidebarGestao.classList.toggle('hidden', !menuGestaoAtivo);
+            sidebarAtivos.classList.toggle('sidebar-oculta', !aberto || menuGestaoAtivo);
+            sidebarGestao.classList.toggle('sidebar-oculta', !aberto || !menuGestaoAtivo);
+            mainContent.style.marginLeft = aberto ? '' : '50px';
+            botaoMenu.querySelector('i').className = aberto
+                ? 'fas fa-bars text-2xl'
+                : (menuGestaoAtivo ? 'fas fa-gear text-2xl' : 'fas fa-server text-2xl');
+            botaoMenu.title = aberto ? 'Ocultar o menu' : 'Exibir o menu';
+            botaoGestao.querySelector('i').className = menuGestaoAtivo ? 'fas fa-server text-2xl' : 'fas fa-gear text-2xl';
+            botaoGestao.title = menuGestaoAtivo ? 'Ativos' : 'Gestão';
+            botaoGestao.setAttribute('aria-label', botaoGestao.title);
+        }
+        aplicarMenu();
+        botaoMenu.addEventListener('click', function () {
+            aberto = !aberto;
+            localStorage.setItem('menuAberto', aberto);
+            aplicarMenu();
+        });
+        botaoGestao.addEventListener('click', function (evento) {
+            evento.preventDefault();
+            menuGestaoAtivo = !menuGestaoAtivo;
+            aberto = true;
+            localStorage.setItem('menuLateral', menuGestaoAtivo ? 'gestao' : 'ativos');
+            localStorage.setItem('menuAberto', aberto);
+            aplicarMenu();
+        });
+    })();
+    </script>
+</body>
+</html>

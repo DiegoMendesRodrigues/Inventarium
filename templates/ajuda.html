@@ -1,0 +1,63 @@
+<!-- Sistema criado por Diego Mendes Rodrigues, utilizando desenvolvimento de software e inteligência artificial -->
+{% extends 'base.html' if session.get('administrador_id') else 'ajuda_autenticacao_layout.html' %}
+
+{% block title %}Ajuda - Inventarium{% endblock %}
+
+{% block content %}
+    <div class="w-full">
+        <h1 class="mb-6 text-3xl font-bold text-[#182387]"><i class="fas fa-circle-question mr-2 text-[#182387]"></i>Ajuda em Vídeos - Inventarium</h1>
+
+        <div class="space-y-6">
+            <section class="rounded-xl bg-white p-5 shadow-sm sm:p-7">
+                <h2 class="mb-4 text-xl font-semibold text-[#182387]">Inventarium | Inventário de Ativos de TI - Visão Geral</h2>
+                <div class="mb-5 space-y-4 leading-relaxed text-slate-700">
+                    <p>Conheça o Inventarium que é uma solução voltada para a criação de um Inventário de Ativos de TI em uma organização.</p>
+                    <p>Nessa solução, o usuário cadastra quais são as Empresas que possuirão o inventário, junto com as áreas e os locais em que esses equipamentos são utilizados, e na sequência os usuários deles. Depois, temos as seguintes opções para armazenar as informações:</p>
+                    <ul class="list-disc space-y-1 pl-6">
+                        <li><strong>Hardware:</strong> Estações All-in-One, Estações de Trabalho, Notebooks, Monitores, Impressoras, Periféricos, Tablets;</li>
+                        <li><strong>Infraestrutura:</strong> Modens, Firewalls, Roteadores, Switches, Access Points, Servidores, Projetores, Televisões, No-Breaks, Racks;</li>
+                        <li><strong>Softwares;</strong></li>
+                        <li><strong>Empresa:</strong> Empresas, Áreas e Locais, Usuários;</li>
+                        <li><strong>Gestão:</strong> Administradores, Chaves de Acesso, Webservices, Configurações.</li>
+                    </ul>
+                </div>
+                <div class="aspect-video overflow-hidden rounded-lg bg-slate-100">
+                    <iframe class="h-full w-full" src="https://www.youtube-nocookie.com/embed/Ue471ZKj9u8" title="Inventarium - Visão Geral" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </section>
+
+            <section class="rounded-xl bg-white p-5 shadow-sm sm:p-7">
+                <h2 class="mb-4 text-xl font-semibold text-[#182387]">Inventarium | Inventário de Ativos de TI - Gestão da Empresa, Locais e Usuários dos Equipamentos</h2>
+                <p class="mb-5 leading-relaxed text-slate-700">Durante a gestão dos Ativos de TI no Inventarium, é necessário que as Empresas da instiuição com ativos sejam cadastradas na solução, junto com suas áreas, locais de uso, além dos usuários dos equipamentos.</p>
+                <div class="aspect-video overflow-hidden rounded-lg bg-slate-100">
+                    <iframe class="h-full w-full" src="https://www.youtube-nocookie.com/embed/_xrZJ2v--NY" title="Gestão da Empresa, Locais e Usuários dos Equipamentos" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </section>
+
+            <section class="rounded-xl bg-white p-5 shadow-sm sm:p-7">
+                <h2 class="mb-4 text-xl font-semibold text-[#182387]">Inventarium | Inventário de Ativos de TI - Gestão dos Ativos - Hardware</h2>
+                <p class="mb-5 leading-relaxed text-slate-700">Após o cadastro das Empresas que possuirão o inventário, junto com as áreas e os locais em que esses equipamentos são utilizados, devemos cadastrar as informações dos Ativos, nas seguintes áreas: Estações All-in-One, Estações de Trabalho, Notebooks, Monitores, Impressoras, Periféricos, Tablets e Softwares. Nesse vídeo, veremos como trabalhar com essas informações nessa solução.</p>
+                <div class="aspect-video overflow-hidden rounded-lg bg-slate-100">
+                    <iframe class="h-full w-full" src="https://www.youtube-nocookie.com/embed/PVnsYtdwPjo" title="Gestão dos Ativos - Hardware" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </section>
+
+            <section class="rounded-xl bg-white p-5 shadow-sm sm:p-7">
+                <h2 class="mb-4 text-xl font-semibold text-[#182387]">Inventarium | Inventário de Ativos de TI - Gestão dos Ativos - Infraestrutura</h2>
+                <p class="mb-5 leading-relaxed text-slate-700">Dentre os ativos de tecnologia da informação temos a infraestrutura de TI, que também precisamos cadastrar as informações dos Ativos, nas seguintes áreas: Modens, Firewalls, Roteadores, Switches, Access Points, Servidores, Projetores, Televisões, No-Breaks e Racks. Nesse vídeo, veremos como trabalhar com essas informações nessa solução.</p>
+                <div class="aspect-video overflow-hidden rounded-lg bg-slate-100">
+                    <iframe class="h-full w-full" src="https://www.youtube-nocookie.com/embed/xHKXnvsubmw" title="Gestão dos Ativos - Infraestrutura" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </section>
+
+            <section class="rounded-xl bg-white p-5 shadow-sm sm:p-7">
+                <h2 class="mb-4 text-xl font-semibold text-[#182387]">Inventarium | Inventário de Ativos de TI - Gestão do Inventarium</h2>
+                <p class="mb-5 leading-relaxed text-slate-700">Além dos ativos de tecnologia da informação, existem os administradores do Inventarium, cadastros auxiliares de informações, além de webservices voltados para a integração com outros sistemas. Nesse vídeo, veremos como trabalhar com essas áreas da solução.</p>
+                <div class="aspect-video overflow-hidden rounded-lg bg-slate-100">
+                    <iframe class="h-full w-full" src="https://www.youtube-nocookie.com/embed/CieVCKcFDTs" title="Gestão do Inventarium" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </section>
+        </div>
+
+    </div>
+{% endblock %}

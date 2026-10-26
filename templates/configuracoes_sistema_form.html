@@ -1,0 +1,113 @@
+<!-- Sistema criado por Diego Mendes Rodrigues, utilizando desenvolvimento de software e inteligência artificial -->
+{% extends "base.html" %}
+{% block title %}Configurações - Inventarium{% endblock %}
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-[#182387]"><i class="fas fa-gear mr-2 text-[#182387]"></i>Configurações</h1>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm p-6">
+    <form method="POST" action="{{ request.path }}" data-configuracoes-sistema>
+        <input type="hidden" name="id" value="{{ configuracao.id if configuracao.id else '' }}">
+        <div class="grid grid-cols-1 gap-6">
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome Fantasia da Empresa gestora do Inventarium *</label>
+                    <input type="text" name="nome_fantasia_empresa" maxlength="100" required value="{{ configuracao.nome_fantasia_empresa or '' }}"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">URL de Acesso ao Sistema *</label>
+                    <input type="text" name="url_acesso_sistema" maxlength="200" required value="{{ configuracao.url_acesso_sistema or '' }}"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Senha Inicial de um Usuário Administrador *</label>
+                    <input type="text" name="senha_inicial_administrador" maxlength="50" required value="{{ configuracao.senha_inicial_administrador or '' }}"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+
+            <div class="bg-slate-300 w-full h-px" aria-hidden="true"></div>
+
+            <div class="space-y-5">
+                <h2 class="text-xl font-semibold text-slate-800">Configurações de E-mail</h2>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Servidor SMTP *</label>
+                    <input type="text" name="servidor_smtp" maxlength="200" required value="{{ configuracao.servidor_smtp or '' }}"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Porta *</label>
+                    <select name="porta_smtp" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="" {% if not configuracao.porta_smtp %}selected{% endif %}>Selecione</option>
+                        {% for porta in portas_smtp %}
+                        <option value="{{ porta }}" {% if configuracao.porta_smtp == porta %}selected{% endif %}>{{ porta }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Usuário para a Autenticação *</label>
+                    <input type="text" name="usuario_autenticacao" maxlength="200" required value="{{ configuracao.usuario_autenticacao or '' }}"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Senha para a Autenticação *</label>
+                    <input type="password" name="senha_autenticacao" maxlength="200" required value="{{ configuracao.senha_autenticacao or '' }}"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome do Remetente que Aparece no E-mail *</label>
+                    <input type="text" name="nome_remetente" maxlength="100" required value="{{ configuracao.nome_remetente or '' }}"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="h-4" aria-hidden="true"></div>
+                <h2 class="text-xl font-semibold text-slate-800">E-mail - Esqueci minha senha</h2>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Assunto *</label>
+                    <input type="text" name="assunto_esqueci_senha" maxlength="100" required value="{{ configuracao.assunto_esqueci_senha or '' }}"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Mensagem *</label>
+                    <textarea name="mensagem_esqueci_senha" rows="8" required
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ configuracao.mensagem_esqueci_senha or '' }}</textarea>
+                </div>
+                <div class="h-8" aria-hidden="true"></div>
+                <h2 class="text-xl font-semibold text-slate-800">E-mail - Redefinição da senha</h2>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Assunto *</label>
+                    <input type="text" name="assunto_redefinicao_senha" maxlength="100" required value="{{ configuracao.assunto_redefinicao_senha or '' }}"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Mensagem *</label>
+                    <textarea name="mensagem_redefinicao_senha" rows="8" required
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ configuracao.mensagem_redefinicao_senha or '' }}</textarea>
+                </div>
+                <div class="h-8" aria-hidden="true"></div>
+                <h2 class="text-xl font-semibold text-slate-800">E-mail - Software com Licenças por Assinatura</h2>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Assunto *</label>
+                    <input type="text" name="assunto_software_assinatura" maxlength="100" required value="{{ configuracao.assunto_software_assinatura or '' }}"
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Mensagem *</label>
+                    <textarea name="mensagem_software_assinatura" rows="8" required
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ configuracao.mensagem_software_assinatura or '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 flex gap-4">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-check mr-2"></i>Salvar
+            </button>
+            <a href="{{ url_for('dashboard') }}" class="bg-red-800 hover:bg-red-900 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-times mr-2"></i>Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

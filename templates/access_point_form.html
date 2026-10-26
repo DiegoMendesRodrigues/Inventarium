@@ -1,0 +1,87 @@
+<!-- Sistema criado por Diego Mendes Rodrigues, utilizando desenvolvimento de software e inteligência artificial -->
+{% extends "base.html" %}
+{% block title %}{% if item %}Editar{% else %}Novo{% endif %} Access Point - Inventarium{% endblock %}
+{% block content %}
+<h1 class="text-3xl font-bold text-[#182387] mb-6"><i class="fas fa-broadcast-tower mr-2 text-[#182387]"></i>{% if item %}Editar{% else %}Novo{% endif %} Access Point</h1>
+
+<div class="bg-white rounded-xl shadow-sm p-6">
+    <form method="POST" action="{{ request.path }}">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Código Interno *</label>
+                <input type="text" name="codigo_interno" maxlength="50" value="{{ item.codigo_interno if item else proximo_codigo }}" readonly required
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Host</label>
+                <input type="text" name="host" maxlength="150" value="{{ item.host if item and item.host else '' }}"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Marca *</label>
+                <select name="marca" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['Aruba Networks (HPE)', 'Cisco', 'Intelbras', 'Mercusys', 'Netgear', 'TP-Link', 'Outra marca'] %}
+                    <option value="{{ opt }}" {% if item and item.marca == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Tipo *</label>
+                <select name="tipo" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['Fixo', 'Gerenciado (Managed)', 'Inteligente (Smart/Smart Managed)', 'Modular', 'Não Gerenciado (Unmanaged)', 'PoE (Power over Ethernet)', 'Outro tipo'] %}
+                    <option value="{{ opt }}" {% if item and item.tipo == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Quantidade de Portas *</label>
+                <select name="portas" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['1 porta', '2 portas', 'Outra quantidade'] %}
+                    <option value="{{ opt }}" {% if item and item.portas == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Velocidade de Conexão *</label>
+                <select name="velocidade_rede" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for opt in ['Até 100 Mbps', 'de 100 Mpps até 200 Mbps', 'de 200 Mpps até 1 Gbps', 'de 1 Gbps até 2.5 Gbps', 'Acima de 2.5 Gbps'] %}
+                    <option value="{{ opt }}" {% if item and item.velocidade_rede == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Empresa</label>
+                <select name="empresa_id" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                    {% for e in empresas %}
+                    <option value="{{ e.id }}" {% if item and item.empresa_id == e.id %}selected{% endif %}>{{ e.nome_fantasia }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Local de Uso</label>
+                <select name="local_de_uso_id" data-selecionado="{{ item.area_local_id if item and item.area_local_id else '' }}" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione</option>
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Outras Informações</label>
+                <textarea name="outras_informacoes" rows="3"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{% if item %}{{ item.outras_informacoes }}{% endif %}</textarea>
+            </div>
+        </div>
+        <div class="mt-6 flex gap-4">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-save mr-2"></i>Salvar
+            </button>
+            <a href="{{ url_for('list_access_points') }}" class="bg-red-800 hover:bg-red-900 text-white px-6 py-2 rounded-lg">
+                <i class="fas fa-times mr-2"></i>Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
